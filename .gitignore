@@ -3,10 +3,6 @@ target/
 build/*.ptau
 build/*_0000.zkey
 build/*_final.zkey
-build/*.hex
-build/proof.json
-build/public.json
-build/verification_key.json
 *.env
 .env
 frontend/dist/
