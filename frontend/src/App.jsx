@@ -170,7 +170,11 @@ function HowItWorks({ onStartDemo }) {
 function Sidebar() {
   return (
     <div className="sidebar-card">
-      <h3>Current Demonstration</h3>
+      <h3>About VCARI</h3>
+      <p className="sidebar-about">
+        VCARI allows regulated organizations to prove compliance without
+        revealing confidential operational data.
+      </p>
 
       <div className="sidebar-section">
         <div className="sidebar-section-title">Industry</div>
@@ -206,11 +210,81 @@ function Sidebar() {
         <p className="sidebar-item">BLS12-381</p>
       </div>
 
+      <div className="sidebar-section">
+        <div className="sidebar-section-title">Powered by</div>
+        <ul className="sidebar-powered">
+          <li>
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="6" stroke="#4A2545" strokeWidth="1.5"/><path d="M5 8h6M8 5v6" stroke="#4A2545" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            Circom
+          </li>
+          <li>
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" aria-hidden="true"><path d="M3 13L8 3l5 10" stroke="#4A2545" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/><path d="M5 9h6" stroke="#4A2545" strokeWidth="1.5" strokeLinecap="round"/></svg>
+            Groth16
+          </li>
+          <li>
+            <svg viewBox="0 0 16 16" width="13" height="13" fill="none" aria-hidden="true"><circle cx="8" cy="8" r="5" stroke="#2F6E4F" strokeWidth="1.5"/><circle cx="8" cy="8" r="2" fill="#2F6E4F"/></svg>
+            Stellar Soroban
+          </li>
+        </ul>
+      </div>
+
       <p className="sidebar-note">
         Compliance evaluation runs locally in this demo. The proof is then
         submitted for verification on Stellar Testnet.
       </p>
     </div>
+  );
+}
+
+// ── Logo-mark inline SVG (nav) ──────────────────────────────────────────────
+function LogoMark({ size = 28 }) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 84" fill="none"
+      width={size} height={size} aria-hidden="true" style={{ flexShrink: 0 }}>
+      <defs>
+        <clipPath id="nav-rl">
+          <polygon points="40,66 55,66 73,8 58,8"/>
+        </clipPath>
+      </defs>
+      <polygon points="7,8 22,8 40,66 25,66" fill="#4A2545"/>
+      <g clipPath="url(#nav-rl)">
+        <polygon points="40,66 55,66 73,8 58,8" fill="#F5F2EA"/>
+        {[12,18,24,30,36,42,48,54,60,66].map((x) => (
+          <line key={x} x1={x} y1="4" x2={x+36} y2="40" stroke="#2F6E4F" strokeWidth="4.5"/>
+        ))}
+      </g>
+      <rect x="37.5" y="69.5" width="5" height="5" rx="0.5" transform="rotate(45 40 72)" fill="#4A2545" opacity="0.65"/>
+      <rect x="38.2" y="74.2" width="3.6" height="3.6" rx="0.4" transform="rotate(45 40 76)" fill="#4A2545" opacity="0.38"/>
+      <rect x="38.8" y="78.2" width="2.4" height="2.4" rx="0.3" transform="rotate(45 40 79.4)" fill="#4A2545" opacity="0.18"/>
+    </svg>
+  );
+}
+
+// ── Hero inline icons ────────────────────────────────────────────────────────
+function IconZK() {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36" aria-hidden="true">
+      <rect x="6" y="6" width="28" height="28" rx="4" stroke="#4A2545" strokeWidth="2"/>
+      <path d="M13 14h14M13 26h14M13 14l14 12M27 14L13 26" stroke="#4A2545" strokeWidth="1.8" strokeLinecap="round"/>
+    </svg>
+  );
+}
+function IconStellar() {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36" aria-hidden="true">
+      <circle cx="20" cy="20" r="13" stroke="#2F6E4F" strokeWidth="2"/>
+      <path d="M20 10v20M10 20h20M13.5 13.5l13 13M26.5 13.5l-13 13" stroke="#2F6E4F" strokeWidth="1.6" strokeLinecap="round" opacity="0.5"/>
+      <circle cx="20" cy="20" r="3" fill="#2F6E4F"/>
+    </svg>
+  );
+}
+function IconPrivate() {
+  return (
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" width="36" height="36" aria-hidden="true">
+      <rect x="10" y="18" width="20" height="14" rx="3" stroke="#4A2545" strokeWidth="2"/>
+      <path d="M14 18v-4a6 6 0 0 1 12 0v4" stroke="#4A2545" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="20" cy="25" r="2" fill="#4A2545"/>
+    </svg>
   );
 }
 
@@ -781,6 +855,10 @@ export default function App() {
   return (
     <div className="page-shell">
       <nav className="app-nav">
+        <div className="app-nav-brand">
+          <LogoMark size={28} />
+          <span className="app-nav-wordmark">VCARI</span>
+        </div>
         <div className="app-nav-inner">
           <a
             className={activeView === "demo" ? "active" : ""}
@@ -805,17 +883,36 @@ export default function App() {
         <div className="container">
           <div className="hero-section">
             <div className="hero-content">
-              <h1>VCARI</h1>
+              <h1>Prove compliance.<br/>Reveal nothing else.</h1>
               <p className="hero-sub">
                 Verifiable Compliance Assessment for Regulated Industries
               </p>
               <p className="hero-body">
-                Privacy-preserving compliance verification powered by
-                Zero-Knowledge Proofs on Stellar.
+                VCARI enables organizations to prove regulatory compliance
+                without exposing confidential operational records.
               </p>
-              <button className="cta-btn" onClick={startDemo}>
-                Start Demo →
-              </button>
+              <div className="hero-actions">
+                <button className="cta-btn" onClick={startDemo}>
+                  Start Live Demo →
+                </button>
+                <button className="cta-btn-secondary" onClick={() => handleNav("how-it-works")}>
+                  How It Works
+                </button>
+              </div>
+              <div className="hero-features">
+                <div className="hero-feature">
+                  <IconPrivate />
+                  <span>Private by Design</span>
+                </div>
+                <div className="hero-feature">
+                  <IconZK />
+                  <span>Zero-Knowledge Proofs</span>
+                </div>
+                <div className="hero-feature">
+                  <IconStellar />
+                  <span>Verified on Stellar</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
