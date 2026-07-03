@@ -19,7 +19,7 @@ Privacy-preserving compliance verification powered by Zero-Knowledge Proofs on S
 [![Groth16](https://img.shields.io/badge/Proof_System-Groth16-green?style=for-the-badge)]()
 [![BLS12-381](https://img.shields.io/badge/Curve-BLS12--381-orange?style=for-the-badge)]()
 
-**[🔍 View Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5)** · **[🎥 Demo Video](#)**
+**[🔍 View Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5)** · **[🎥 Demo Video](https://youtu.be/43I31NGZ_58)**
 
 VCARI allows regulated organizations to issue cryptographically verifiable compliance certificates without exposing proprietary operational data. Compliance rules are encoded as a Circom circuit, proven with Groth16, and verified on-chain using Stellar Soroban's native BLS12-381 primitives.
 
