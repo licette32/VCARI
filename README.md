@@ -1,48 +1,60 @@
-# VCARI
+<p align="center">
+  <img src="frontend/public/logo-v.png" alt="VCARI Logo" width="180">
+</p>
 
-### Verifiable Compliance Assessment for Regulated Industries
+<h1 align="center">VCARI</h1>
 
-**Privacy-preserving compliance verification powered by Zero-Knowledge Proofs on Stellar.**
+<p align="center">
+<b>Verifiable Compliance Assessment for Regulated Industries</b>
+</p>
 
-VCARI enables organizations operating in regulated industries to prove regulatory compliance without exposing confidential operational records. Using Zero-Knowledge Proofs generated with Circom and verified on Stellar Soroban, organizations can demonstrate that compliance requirements were satisfied while keeping sensitive operational data private.
+<p align="center">
+Privacy-preserving compliance verification powered by Zero-Knowledge Proofs on Stellar.
+</p>
 
----
 
-## Problem
 
-Organizations in regulated industries—healthcare, finance, logistics, energy, manufacturing, and others—must continuously demonstrate compliance to auditors, regulators, or business partners.
+[![Stellar](https://img.shields.io/badge/Stellar-Testnet-7B3FE4?style=for-the-badge&logo=stellar&logoColor=white)](https://stellar.expert/explorer/testnet/contract/CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5)
+[![Circom](https://img.shields.io/badge/Circom-2.2.3-blue?style=for-the-badge)](https://docs.circom.io/)
+[![Groth16](https://img.shields.io/badge/Proof_System-Groth16-green?style=for-the-badge)]()
+[![BLS12-381](https://img.shields.io/badge/Curve-BLS12--381-orange?style=for-the-badge)]()
 
-Today, proving compliance usually requires exposing confidential internal records such as:
+**[🔍 View Contract on Stellar Expert](https://stellar.expert/explorer/testnet/contract/CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5)** · **[🎥 Demo Video](#)**
 
-- Maintenance history
-- Calibration schedules
-- Operational logs
-- Inspection reports
-- Technical documentation
-
-These records often contain sensitive business information that organizations would rather keep private.
-
----
-
-## Why Zero-Knowledge?
-
-Zero-Knowledge Proofs allow an organization to prove that a set of compliance rules has been satisfied **without revealing the underlying confidential data**.
-
-Instead of sharing internal records, the organization generates a cryptographic proof.
-
-Anyone can verify that proof on Stellar and be confident that the compliance conditions were met.
+VCARI allows regulated organizations to issue cryptographically verifiable compliance certificates without exposing proprietary operational data. Compliance rules are encoded as a Circom circuit, proven with Groth16, and verified on-chain using Stellar Soroban's native BLS12-381 primitives.
 
 ---
 
-## Why Stellar?
+## Live Deployment
 
-VCARI leverages Stellar's native BLS12-381 cryptographic primitives together with Soroban smart contracts to verify Groth16 Zero-Knowledge proofs efficiently on-chain.
+```
+Contract ID: CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5
+Network:     Stellar Testnet
+Result:      true ✓
+```
 
-Rather than trusting an auditor or an organization, anyone can independently verify the proof while confidential operational records remain private.
+Verify directly:
+
+```bash
+stellar contract invoke \
+  --id CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5 \
+  --network testnet \
+  -- verify \
+  --proof_bytes "$(cat build/proof.hex)" \
+  --pub_signals_bytes "$(cat build/public.hex)"
+```
 
 ---
 
-## Architecture
+## The Problem
+
+A hospital must prove its MRI scanner is calibrated, maintained, and documented — without exposing internal maintenance records, vendor contracts, or operational schedules to auditors or counterparties.
+
+The same problem exists across finance, logistics, energy, manufacturing, and environmental compliance.
+
+---
+
+## Solution
 
 ```
                     Private Operational Records
@@ -63,81 +75,47 @@ Rather than trusting an auditor or an organization, anyone can independently ver
                     Compliance Successfully Verified
 ```
 
----
-
-## Solution
-
-VCARI implements a complete privacy-preserving compliance verification pipeline.
-
-### 1. Compliance Circuit (`circuits/compliance.circom`)
-
-The Circom circuit models regulatory compliance as an arithmetic constraint system over the **BLS12-381** curve.
-
-Private inputs:
-
-- `last_calibration_days` — days since last calibration
-- `max_allowed_days` — maximum allowed calibration interval
-- `preventive_maintenance` — 1 if completed, 0 otherwise
-- `documentation_complete` — 1 if complete, 0 otherwise
-
-Public output:
-
-```
-compliant = 1
-```
-
-only if all compliance rules are satisfied simultaneously.
+- Circom compliance circuit (BLS12-381) encodes the rules as arithmetic constraints
+- Groth16 proof demonstrates all rules are satisfied without revealing private inputs
+- Soroban smart contract verifies the proof on-chain using Stellar's native cryptographic primitives
 
 ---
 
-### 2. Groth16 Proof Generation
+## Quick Start
 
-Using the private operational data, the prover generates a Zero-Knowledge proof demonstrating that:
+```bash
+git clone https://github.com/licette32/VCARI.git
+cd VCARI
+./demo.sh
+```
 
-- calibration is still within the allowed interval
-- preventive maintenance has been completed
-- required documentation exists
+Expected output:
 
-without revealing any of those values.
+```
+On-chain verification result: true
+Success: Groth16 proof verified on Stellar testnet.
+```
+
+Prerequisites:
+- Rust + `rustup target add wasm32v1-none`
+- Node.js + npm
+- Stellar CLI configured with a funded Testnet account
+- WSL (for Circom compilation)
 
 ---
 
-### 3. Soroban Smart Contract
+## Compliance Circuit
 
-The Soroban verifier contract validates the Groth16 proof on Stellar Testnet.
+4 private inputs, 1 public output.
 
-The verification key is stored once using:
+| Input | Type | Description |
+|-------|------|-------------|
+| last_calibration_days | private | Days since last calibration |
+| max_allowed_days | private | Maximum allowed interval |
+| preventive_maintenance | private | 1 if completed |
+| documentation_complete | private | 1 if complete |
 
-```
-set_vk()
-```
-
-Auditors or counterparties can later verify proofs by calling:
-
-```
-verify()
-```
-
-using only:
-
-- proof bytes
-- public signal bytes
-
-No confidential operational data is ever disclosed.
-
----
-
-## Demonstration Scenario
-
-The current demonstration uses **biomedical equipment compliance**.
-
-An equipment is considered compliant only if:
-
-- Calibration interval has not expired
-- Preventive maintenance has been completed
-- Technical documentation is complete
-
-Although biomedical equipment is used as the demonstration scenario, the architecture is intentionally generic and applicable to any regulated industry.
+Output: `compliant = 1` only if all rules are satisfied simultaneously.
 
 ---
 
@@ -157,163 +135,30 @@ Although biomedical equipment is used as the demonstration scenario, the archite
 ## Repository Structure
 
 ```
-circuits/
-    compliance.circom — Compliance circuit (BLS12-381, Groth16)
-
-contract/
-    Soroban verifier smart contract (set_vk + verify)
-
-proving/
-    Proving key, witness, and sample inputs
-
-frontend/
-    React demo UI — interactive compliance verification flow
-
-tools/circom_to_soroban_hex/
-    Rust CLI: converts snarkjs JSON outputs to Soroban-compatible hex
-
-build/
-    Generated circuit artifacts and proof outputs (disposable)
-
-demo.sh
-    End-to-end execution script
-```
-
----
-
-## Prerequisites
-
-- Rust + `rustup target add wasm32v1-none`
-- Soroban CLI (`stellar`)
-- Node.js + npm
-- WSL (required for Circom compilation)
-- Stellar Testnet account
-
----
-
-## Quick Start
-
-> The `.zkey` file is included in `proving/` for convenience.
-> Full regeneration instructions are provided below.
-
-```bash
-git clone https://github.com/licette32/VCARI.git
-cd VCARI
-./demo.sh
-```
-
-The script performs the complete pipeline:
-
-1. Install Node dependencies
-2. Build the Soroban contract
-3. Deploy to Stellar Testnet
-4. Generate Groth16 proof from witness
-5. Verify locally with snarkjs
-6. Encode proof for Soroban
-7. Store verification key on-chain
-8. Verify proof on-chain
-
-Expected output:
-
-```
-On-chain verification result: true
-
-Success: Groth16 proof verified on Stellar testnet.
-```
-
----
-
-## Regenerating the ZKey
-
-```bash
-# Compile circuit (WSL required)
-circom --prime bls12381 --r1cs --wasm --sym \
-  -o build/ \
-  -l node_modules \
-  circuits/compliance.circom
-
-# Powers of Tau (BLS12-381)
-npx snarkjs powersoftau new bls12381 12 build/pot12_0000.ptau
-npx snarkjs powersoftau contribute build/pot12_0000.ptau build/pot12_0001.ptau --name="First contribution" -v
-npx snarkjs powersoftau prepare phase2 build/pot12_0001.ptau build/pot12_final.ptau -v
-
-# Groth16 Setup
-npx snarkjs groth16 setup build/compliance.r1cs build/pot12_final.ptau build/compliance_0000.zkey
-echo "entropy" | npx snarkjs zkey contribute build/compliance_0000.zkey build/compliance_final.zkey --name="1st contributor" -v
-
-cp build/compliance_final.zkey proving/
-```
-
----
-
-## Latest Testnet Deployment
-
-```
-Contract ID: CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5
-```
-
-Verify directly from the CLI:
-
-```bash
-stellar contract invoke \
-  --id CAY3NMUAZEHW5LL453KL2CCJT5VCOS47C2GXPFV3KAPOUTTVT4XRNST5 \
-  --network testnet \
-  -- verify \
-  --proof_bytes "$(cat build/proof.hex)" \
-  --pub_signals_bytes "$(cat build/public.hex)"
-```
-
----
-
-## Useful Commands
-
-```bash
-# Compile check
-cargo check --workspace
-
-# Run tests
-cargo test --workspace
-
-# Encode artifacts for Soroban
-cargo run -p circom-to-soroban-hex -- vk build/verification_key.json
-cargo run -p circom-to-soroban-hex -- proof build/proof.json
-cargo run -p circom-to-soroban-hex -- public build/public.json
-
-# Run frontend locally
-cd frontend && npm install && npm run dev
-```
-
----
-
-## Frontend
-
-The frontend provides an interactive demo of the full compliance verification flow:
-
-1. Enter private operational records (calibration days, maintenance status, documentation)
-2. Evaluate compliance rules locally
-3. Load the pre-generated Groth16 proof
-4. Submit to the Soroban verifier contract on Stellar Testnet
-5. View the on-chain verification result
-
-```bash
-cd frontend && npm install && npm run dev
+circuits/                    Compliance circuit (Circom, BLS12-381)
+contract/                    Soroban verifier contract (set_vk, verify)
+proving/                     Proving key, witness, sample inputs
+frontend/                    React demo UI
+tools/circom_to_soroban_hex/ snarkjs JSON → Soroban hex encoder (Rust CLI)
+build/                       Generated artifacts (regenerable)
+demo.sh                      End-to-end pipeline script
 ```
 
 ---
 
 ## Acknowledgements
 
-This project uses the **Soroban Groth16 verifier contract** and **circom-to-soroban-hex** tooling originally developed by **James Bachini** in the [CircomStellar](https://github.com/jamesbachini/CircomStellar) project.
+This project builds on the Soroban Groth16 verifier contract and circom-to-soroban-hex tooling from [CircomStellar](https://github.com/jamesbachini/CircomStellar) by James Bachini.
 
-The compliance circuit, application domain, regulatory use case, and frontend were developed specifically for VCARI.
+The compliance circuit, regulatory use case, application domain, and frontend were developed for VCARI.
 
 ---
 
 ## Disclaimer
 
-This project is an experimental prototype created for the **Stellar Real-World ZK Hackathon**.
+VCARI is an experimental prototype developed for the Stellar Real-World ZK Hackathon.
 
-It has **not** been security audited and should not be used in production environments.
+The project demonstrates privacy-preserving compliance verification using ZK Proofs on Stellar and has not undergone a security audit
 
 ---
 

@@ -174,11 +174,22 @@ fn verify_proof(
     Ok(bls.pairing_check(vp1, vp2))
 }
 
+// VCARI Verifier Contract
+//
+// Implements Groth16 verification over BLS12-381 using Stellar Soroban's native
+// pairing primitives. The verification equation is:
+//
+//   e(-A, B) · e(α, β) · e(vk_x, γ) · e(C, δ) = 1
+//
+// where vk_x = IC[0] + Σ pub_signals[i] · IC[i+1]
+//
+// set_vk() stores the verification key once; verify() accepts proof bytes and
+// public signal bytes and returns true iff the pairing check holds.
 #[contract]
-pub struct Groth16VerifierContract;
+pub struct VCARIVerifierContract;
 
 #[contractimpl]
-impl Groth16VerifierContract {
+impl VCARIVerifierContract {
     pub fn set_vk(env: Env, vk_bytes: Bytes) -> Result<(), VerifierError> {
         // Parse once here so malformed keys fail fast and cannot be stored.
         let _vk = VerificationKey::from_bytes(&env, &vk_bytes)?;

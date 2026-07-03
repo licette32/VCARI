@@ -1,3 +1,27 @@
+//! circom-to-soroban-hex
+//!
+//! Converts snarkjs JSON outputs (verification_key.json, proof.json, public.json)
+//! into the raw hex encoding expected by the VCARI Soroban verifier contract.
+//!
+//! Usage:
+//!   circom-to-soroban-hex vk    <verification_key.json>
+//!   circom-to-soroban-hex proof <proof.json>
+//!   circom-to-soroban-hex public <public.json>
+//!
+//! Encoding format (matches contract/src/lib.rs deserialization):
+//!   VK:     G1(alpha) | G2(beta) | G2(gamma) | G2(delta) | u32be(ic_len) | G1(ic[0]) | ...
+//!   Proof:  G1(A) | G2(B) | G1(C)
+//!   Public: u32be(n) | Fr[0] | Fr[1] | ... (each Fr as 32-byte big-endian)
+//!
+//! G1 points are serialized as 96 bytes (uncompressed Arkworks BLS12-381).
+//! G2 points are serialized as 192 bytes (uncompressed Arkworks BLS12-381).
+//!
+//! IMPORTANT — Fq2 limb order:
+//!   snarkjs emits Fq2 coordinates as [c1, c0] (Solidity/EVM convention).
+//!   Arkworks serializes Fq2 as [c0, c1].
+//!   This tool swaps the limbs when constructing G2 points so the output
+//!   matches what Soroban's bls12_381::G2Affine::from_array() expects.
+
 use ark_bls12_381::{Fq, Fq2, G1Affine, G2Affine};
 use ark_serialize::CanonicalSerialize;
 use num_bigint::BigUint;
